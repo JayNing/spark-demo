@@ -15,11 +15,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <!--<spark.scope>compile</spark.scope>-->
-    <spark.scope>provided</spark.scope>
+    <spark.scope>compile</spark.scope>
+<!--    <spark.scope>provided</spark.scope>-->
     <jdk.version>1.8</jdk.version>
     <maven.assembly.version>2.4</maven.assembly.version>
-    <maven.compiler.version>3.6.1</maven.compiler.version>
+    <maven.comspark-env.shpiler.version>3.6.1</maven.comspark-env.shpiler.version>
     <scala.binary.version>2.11</scala.binary.version>
     <spark.version>2.2.1</spark.version>
     <jackson.module.version>2.7.4</jackson.module.version>
