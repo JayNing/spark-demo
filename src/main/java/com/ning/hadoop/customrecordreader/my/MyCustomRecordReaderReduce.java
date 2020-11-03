@@ -34,6 +34,7 @@ public class MyCustomRecordReaderReduce extends Reducer<BigText, BigText, NullWr
         if (value != null && StringUtils.isNotBlank(sequenceValue)){
             sequenceValue = sequenceValue.replaceAll("\r","").replaceAll("\n", "").trim();
         }
+        //TODO value根据数据类型，DNA/RNA 转大小写
 
         String giListString = key.getStringValue();
         if (key != null && StringUtils.isNotBlank(giListString)){
