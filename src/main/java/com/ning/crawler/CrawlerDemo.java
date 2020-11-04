@@ -1,5 +1,6 @@
 package com.ning.crawler;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -84,5 +85,21 @@ public class CrawlerDemo {
         return retList;
 
     }
+
+
+    public File download(String pathname, String localName) throws Exception {
+
+        if (ftpClient.listFiles(new String(pathname.getBytes(), ftpClient.getControlEncoding())).length == 0) {
+            throw new Exception("File dose not exist: " + pathname);
+        }
+
+        boolean flag = false;
+
+        File outfile = new File(localName);
+        InputStream ins = ftpClient.retrieveFileStream(pathname);
+        FileUtils.copyInputStreamToFile(ins, outfile);
+        return outfile;
+    }
+
 
 }
