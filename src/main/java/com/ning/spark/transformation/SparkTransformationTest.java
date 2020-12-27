@@ -1,10 +1,12 @@
 package com.ning.spark.transformation;
 
+import org.apache.spark.Accumulator;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function2;
+import org.apache.spark.util.LongAccumulator;
 import org.junit.Test;
 
 import java.util.*;
@@ -22,6 +24,38 @@ public class SparkTransformationTest {
     private static SparkConf conf = new SparkConf().setAppName("local").setMaster("local");
     private static JavaSparkContext sc = new JavaSparkContext(conf);
 
+    /***
+     * 全局共享累加器
+     */
+    @Test
+    public void longAccumulator(){
+
+        List<Integer> data = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
+        // numSlices为设置的分区数量
+        JavaRDD<Integer> distData = sc.parallelize(data,5);
+
+        LongAccumulator longAccumulator = sc.sc().longAccumulator();
+        LongAccumulator longAccumulator2 = sc.sc().longAccumulator();
+
+        JavaRDD<Integer> rdd = distData.mapPartitions((FlatMapFunction<Iterator<Integer>, Integer>) in -> {
+            List<Integer> list = new ArrayList<>();
+            int sum = 0;
+            while (in.hasNext()) {
+                Integer next = in.next();
+                sum += next;
+                longAccumulator.add(next);
+                longAccumulator2.add(1);
+            }
+            list.add(sum);
+            return list.iterator();
+        });
+        System.out.println(rdd.collect());
+        System.out.println("=======11111111========");
+        System.out.println(longAccumulator.value());
+        System.out.println("========222222=======");
+        System.out.println(longAccumulator2.value());
+    }
+
     /**
      *
      * mapPartitionsWithIndex函数作用同mapPartitions，不过提供了两个参数，第一个参数为分区的索引。
@@ -32,6 +66,9 @@ public class SparkTransformationTest {
         List<Integer> data = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
         // numSlices为设置的分区数量
         JavaRDD<Integer> distData = sc.parallelize(data,5);
+
+        LongAccumulator longAccumulator = new LongAccumulator();
+
         //index 为分区索引
         JavaRDD<String> rdd = distData.mapPartitionsWithIndex((Function2<Integer, Iterator<Integer>, Iterator<String>>) (index, input) -> {
             System.out.println("mapPartitionsWithIndex is called....................");
